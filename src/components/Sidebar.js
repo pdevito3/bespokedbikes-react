@@ -1,27 +1,28 @@
 import React, { useState } from 'react';
 import { Transition } from '@tailwindui/react'
-import {BrowserRouter, Switch, Route} from "react-router-dom"
+import {Route, Link, Switch} from "react-router-dom"
 
 function MobileNavButton(props) {
   const inactiveMobileNavButtonClass = "group flex items-center px-2 py-2 text-base leading-6 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-100 transition ease-in-out duration-150";
   const activeMobileNavButtonClass = "group flex items-center px-2 py-2 text-base leading-6 font-medium text-gray-900 rounded-md bg-gray-100 focus:outline-none focus:bg-gray-200 transition ease-in-out duration-150";
+  
   return (
-    <a href={props.hrefTarget} className={props.active ? activeMobileNavButtonClass : inactiveMobileNavButtonClass}>
+    <Link to={props.hrefTarget} activeClassName={activeMobileNavButtonClass} className={inactiveMobileNavButtonClass}>
       {props.svg}
       {props.name}
-    </a>
+    </Link>
   );
 }
 
 function WebNavButton(props) {
-  const activeWebNavButtonSvgClass = "group flex items-center px-2 py-2 text-sm leading-5 font-medium text-gray-900 rounded-md bg-gray-100 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:bg-gray-200 transition ease-in-out duration-150";
+  const activeWebNavButtonClass = "group flex items-center px-2 py-2 text-sm leading-5 font-medium text-gray-900 rounded-md bg-gray-100 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:bg-gray-200 transition ease-in-out duration-150";
   const inactiveWebNavButtonClass = "group flex items-center px-2 py-2 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150";
   
   return(
-    <a href={props.hrefTarget} className={props.active ? activeWebNavButtonSvgClass : inactiveWebNavButtonClass}>
+    <Link to={props.hrefTarget} activeClassName={activeWebNavButtonClass} className={inactiveWebNavButtonClass}>
       {props.svg}
       {props.name}
-    </a>
+    </Link>
   );
 }
 
@@ -70,7 +71,7 @@ function Sidebar(props) {
                   <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-logo-on-white.svg" alt="Workflow" />
                 </div>
                 <nav className="mt-5 px-2 space-y-1">
-                  <MobileNavButton hrefTarget="/" active={true} name="Dashboard" svg={
+                  <MobileNavButton hrefTarget="/" name="Dashboard" svg={
                     <svg className={mobileNavButtonSvgClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
@@ -123,19 +124,19 @@ function Sidebar(props) {
               <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/workflow-logo-on-white.svg" alt="Workflow" />
             </div>
             <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
-              <WebNavButton hrefTarget="/" active={true} name="Dashboard" svg={
+              <WebNavButton hrefTarget="/" name="Dashboard" svg={
                 <svg className={webNavButtonSvgClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
               } />
 
-              <WebNavButton hrefTarget="/team" active={false} name="Team" svg={
+              <WebNavButton hrefTarget="/team" name="Team" svg={
                 <svg className={webNavButtonSvgClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               } />
 
-              <WebNavButton hrefTarget="/projects" active={false} name="Projects" svg={
+              <WebNavButton hrefTarget="/projects" name="Projects" svg={
                 <svg className={webNavButtonSvgClass} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                 </svg>
@@ -173,10 +174,23 @@ function Sidebar(props) {
       <main className="flex-1 relative z-0 overflow-y-auto focus:outline-none" tabIndex={0}>
         <div className="pt-2 pb-6 md:py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-          </div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            {props.content}
+            <Switch>
+              {props.routes.map((route, index) => (
+                // You can render a <Route> in as many places
+                // as you want in your app. It will render along
+                // with any other <Route>s that also match the URL.
+                // So, a sidebar or breadcrumbs or anything else
+                // that requires you to render multiple things
+                // in multiple places at the same URL is nothing
+                // more than multiple <Route>s.
+                <Route
+                  key={index}
+                  path={route.path}
+                  exact={route.exact}
+                  children={<route.page />}
+                />
+              ))}
+            </Switch>
           </div>
         </div>
       </main>

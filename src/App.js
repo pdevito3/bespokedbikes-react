@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './css/app.css';
 import Sidebar from './components/Sidebar';
+import routes from './routes'
+import {BrowserRouter as Router } from "react-router-dom";
 
 function Name(props){
   return (
@@ -15,11 +17,14 @@ function Name(props){
 function App() {
 
   return (
-    <div className="antialiased">
-      <Sidebar content={<Name name="Paul"/>} />
-    </div>
+    <Router>
+      <div className="antialiased">
+        <Sidebar routes={routes} />
+      </div>
+    </Router>
   );
 }
+
 
 
 export default App;
