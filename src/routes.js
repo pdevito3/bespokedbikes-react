@@ -1,6 +1,6 @@
 import React from "react";
 import Index from './pages/Index';
-import Team from './pages/Team';
+import Salespersons from './pages/Salespersons';
 import Projects from './pages/Projects';
 
 export const routes =
@@ -11,9 +11,9 @@ export const routes =
       page: () => <Index/>
     },
     {
-      path: "/team",
+      path: "/salespersons",
       exact: true,
-      page: () => <Team/>
+      page: () => <Salespersons/>
     },
     {
       path: "/projects",
