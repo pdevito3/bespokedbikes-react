@@ -17,14 +17,38 @@ function editSalesPerson(){
 
 }
 
-const fetchSalespersons = async (key, { page = 1 }) => {
-  const res = await fetch(`http://localhost:5000/api/salespersons?pagenumber=${page}&pagesize=4`);
-
-  return res.json();
+function PageButtons(props) {
+  return ( 
+    <>
+      { props.hasPreviousPage && (
+        <button onClick={ () => props.setPage(props.page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+          Previous
+        </button>
+      )}
+      { props.hasNextPage && (
+        <button onClick={ () => props.setPage(props.page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+          Next
+        </button>
+      )}
+    </>
+   );
 }
 
 function Salespersons(props){
   const [page, setPage] = React.useState(1)
+  const [hasNextPage, setHasNextPage] = React.useState(true)
+  const [hasPreviousPage, setHasPreviousPage] = React.useState(false)
+
+  const fetchSalespersons = async (key, { page = 1 }) => {
+    const res = await fetch(`http://localhost:5000/api/salespersons?pagenumber=${page}&pagesize=4`);
+    let pagination = JSON.parse(res.headers.get("X-Pagination"));
+
+    setHasNextPage(pagination.hasNext);
+    setHasPreviousPage(pagination.hasPrevious);
+
+    return res.json();
+  }
+
   const { data: salespersons, status } = useQuery(['salespersons', { page } ], fetchSalespersons)
 
   
@@ -129,24 +153,15 @@ function Salespersons(props){
                     </tbody>
                   </table>
                     <nav className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                    {/* <!-- <div className="hidden sm:block">
-                      <p className="text-sm leading-5 text-gray-700">
-                        Showing
-                        <span className="font-medium">1</span>
-                        to
-                        <span className="font-medium">10</span>
-                        of
-                        <span className="font-medium">20</span>
-                        results
-                      </p>
-                    </div> --> */}
                     <div className="flex-1 flex justify-between sm:justify-end">
-                      <button onClick={ () => setPage(page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                      {/* <button onClick={ () => setPage(page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                         Previous
                       </button>
                       <button onClick={ () => setPage(page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                         Next
-                      </button>
+                      </button> */}
+                      
+                      <PageButtons page={page} setPage={setPage} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage}></PageButtons>
                     </div>
                   </nav>
                 </div>
