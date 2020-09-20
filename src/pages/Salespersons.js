@@ -17,29 +17,32 @@ function editSalesPerson(){
 
 }
 
-function previousPage(){
+const fetchSalespersons = async (key, { page = 1 }) => {
+  const res = await fetch(`http://localhost:5000/api/salespersons?pagenumber=${page}&pagesize=4`);
 
-}
-
-function nextPage(){
-  
-}
-
-const fetchSalespersons = async () => {
-  const res = await fetch('http://localhost:5000/api/salespersons');
-  
   return res.json();
 }
 
 function Salespersons(props){
-  const { data: salespersons, status} = useQuery('salespersons',fetchSalespersons)
-  console.log(salespersons);
+  const [page, setPage] = React.useState(1)
+  const { data: salespersons, status } = useQuery(['salespersons', { page } ], fetchSalespersons)
 
+  
   return (
     <>      
-      {status === 'loading' && (  
-        <div>
-          Loading...
+      {status === 'loading' && (    
+        <div class="fixed inset-0 transition-opacity flex items-center justify-center">
+          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+          
+          <button type="button" class="z-50 inline-flex items-center px-12 py-8 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150 cursor-not-allowed" disabled="">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="text-xl">
+              Loading
+            </p>
+          </button>
         </div>
       )}
       
@@ -138,10 +141,10 @@ function Salespersons(props){
                       </p>
                     </div> --> */}
                     <div className="flex-1 flex justify-between sm:justify-end">
-                      <button onClick={ previousPage() } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                      <button onClick={ () => setPage(page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                         Previous
                       </button>
-                      <button onClick={ nextPage() } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                      <button onClick={ () => setPage(page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
                         Next
                       </button>
                     </div>
