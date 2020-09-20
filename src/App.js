@@ -5,16 +5,6 @@ import routes from './routes'
 import {BrowserRouter as Router } from "react-router-dom";
 import { ReactQueryDevtools } from 'react-query-devtools'
 
-function Name(props){
-  return (
-    <>
-      <p className="text-red-500 p-10">
-        Hey, {props.name}!
-      </p>
-    </>
-  );
-}
-
 function App() {
 
   return (
@@ -24,11 +14,9 @@ function App() {
           <Sidebar routes={routes} />
         </div>
       </Router>
-      <ReactQueryDevtools initialIsOpen />
+      <ReactQueryDevtools initialIsOpen={false} />
     </>
   );
 }
-
-
 
 export default App;

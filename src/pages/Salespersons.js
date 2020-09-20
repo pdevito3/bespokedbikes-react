@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryCache, QueryCache, ReactQueryCacheProvider } from 'react-query'
-import ModifySalesperson from '../components/ModifySalesperson'
+import ModifySalespersons from '../components/ModifySalespersons'
 
 
 function GetFormattedDate(date){
@@ -57,7 +57,7 @@ function Salespersons(props){
   
   return (
     <>      
-      <ModifySalesperson isOpen={isOpen} setIsOpen={setIsOpen}/>
+      <ModifySalespersons isOpen={isOpen} setIsOpen={setIsOpen}/>
 
       {status === 'loading' && (    
         <div class="fixed inset-0 transition-opacity flex items-center justify-center">
