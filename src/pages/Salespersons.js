@@ -1,9 +1,7 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryCache, QueryCache, ReactQueryCacheProvider } from 'react-query'
+import ModifySalesperson from '../components/ModifySalesperson'
 
-function addSalesPerson(){
-
-}
 
 function GetFormattedDate(date){
 
@@ -38,6 +36,7 @@ function Salespersons(props){
   const [page, setPage] = React.useState(1)
   const [hasNextPage, setHasNextPage] = React.useState(true)
   const [hasPreviousPage, setHasPreviousPage] = React.useState(false)
+  const [isOpen, setIsOpen] = React.useState(false)
 
   const fetchSalespersons = async (key, { page = 1 }) => {
     const res = await fetch(`http://localhost:5000/api/salespersons?pagenumber=${page}&pagesize=4`);
@@ -49,11 +48,17 @@ function Salespersons(props){
     return res.json();
   }
 
+  function addSalesPerson(){
+    setIsOpen(true)
+  }
+  
   const { data: salespersons, status } = useQuery(['salespersons', { page } ], fetchSalespersons)
 
   
   return (
     <>      
+      <ModifySalesperson isOpen={isOpen} setIsOpen={setIsOpen}/>
+
       {status === 'loading' && (    
         <div class="fixed inset-0 transition-opacity flex items-center justify-center">
           <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -84,7 +89,7 @@ function Salespersons(props){
             </h2>
             <div>
               <span className="shadow-sm rounded-md">
-                <button onClick={ addSalesPerson() } type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
+                <button onClick={ () => addSalesPerson() } type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
                   Add new salesperson
                 </button>
               </span>
@@ -168,8 +173,6 @@ function Salespersons(props){
               </div>
             </div>
           </div>
-
-          {/* <ModifySalesperson :open="openModifyModal" :formAction="formAction" :salesperson.sync="editable" @closeModal="closeModal" /> */}
         </div>
       )}
     </>
