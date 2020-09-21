@@ -57,12 +57,22 @@ function Salespersons(props){
     setIsOpen(true);
   }
 
+  function handleSubmit(newSalesperson) {
+    console.log(newSalesperson);
+    // call api to create or update record
+    setIsOpen(false);
+  }
+
   const { data: salespersons, status } = useQuery(['salespersons', { page } ], fetchSalespersons)
 
-  
   return (
     <>      
-      <ModifySalespersons isOpen={isOpen} setIsOpen={setIsOpen} salesperson={editableSalesperson}/>
+      <ModifySalespersons
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        salesperson={editableSalesperson}
+        onSubmit={handleSubmit}
+        />
 
       {status === 'loading' && (    
         <div class="fixed inset-0 transition-opacity flex items-center justify-center">

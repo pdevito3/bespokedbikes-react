@@ -3,11 +3,20 @@ import Modal from '../components/Modal'
 
 
 function ModifySalespersons(props) {
+  const [state, setState] = React.useState({ ...props.salesperson });
 
-  function submit(salesperson) {
-    console.log(salesperson);
-    // return new salesperson object
-    props.setIsOpen(false);
+  function handleChange(e) {
+    const key = e.target.name;
+    const value = e.target.value;
+
+    setState(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  }
+
+  function submit() {
+    props.onSubmit(state);
   }
 
   return (
@@ -27,7 +36,12 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input value={props.salesperson.firstName} id="first_name" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input
+                    name="firstName"
+                    onChange={handleChange}
+                    value={state.firstName}
+                    id="first_name"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -38,7 +52,12 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input value={props.salesperson.lastName} id="last_name" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input 
+                    name="lastName"
+                    onChange={handleChange}
+                    value={state.lastName}
+                    id="last_name"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -49,7 +68,12 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input value={props.salesperson.address1} id="address1" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input 
+                    name="address1"
+                    onChange={handleChange}
+                    value={state.address1}
+                    id="address1"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -62,7 +86,12 @@ function ModifySalespersons(props) {
               </div>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input value={props.salesperson.address2} id="address2" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input 
+                    name="address2"
+                    onChange={handleChange}
+                    value={state.address2}
+                    id="address2"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -73,7 +102,12 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input value={props.salesperson.city} id="city" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input 
+                    name="city"
+                    onChange={handleChange}
+                    value={state.city}
+                    id="city"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -84,7 +118,12 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input value={props.salesperson.state} id="state" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input 
+                    name="state"
+                    onChange={handleChange}
+                    value={state.state}
+                    id="state"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -95,7 +134,12 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input value={props.salesperson.postalCode} id="zip" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input 
+                    name="postalCode"
+                    onChange={handleChange}
+                    value={state.postalCode}
+                    id="zip"
+                    class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -104,7 +148,7 @@ function ModifySalespersons(props) {
 
         <div class="mt-5 sm:mt-6 space-y-2">
           <span class="flex w-full rounded-md shadow-sm">
-            <button onClick={() => submit(props.salesperson)} type="button" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+            <button onClick={submit} type="button" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
               Submit
             </button>
           </span>
