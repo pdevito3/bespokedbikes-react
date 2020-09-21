@@ -11,9 +11,6 @@ function getTerminationString(val){
 
 }
 
-function editSalesPerson(){
-
-}
 
 function PageButtons(props) {
   return ( 
@@ -37,6 +34,7 @@ function Salespersons(props){
   const [hasNextPage, setHasNextPage] = React.useState(true)
   const [hasPreviousPage, setHasPreviousPage] = React.useState(false)
   const [isOpen, setIsOpen] = React.useState(false)
+  const [editableSalesperson, setEditableSalesperson] = React.useState({})
 
   const fetchSalespersons = async (key, { page = 1 }) => {
     const res = await fetch(`http://localhost:5000/api/salespersons?pagenumber=${page}&pagesize=4`);
@@ -48,16 +46,23 @@ function Salespersons(props){
     return res.json();
   }
 
-  function addSalesPerson(){
+  function addSalesPerson(){ 
+    setEditableSalesperson({})
     setIsOpen(true)
   }
   
+  function editSalesPerson(salesperson){
+    console.log(salesperson)
+    setEditableSalesperson(Object.assign({}, salesperson));
+    setIsOpen(true);
+  }
+
   const { data: salespersons, status } = useQuery(['salespersons', { page } ], fetchSalespersons)
 
   
   return (
     <>      
-      <ModifySalespersons isOpen={isOpen} setIsOpen={setIsOpen}/>
+      <ModifySalespersons isOpen={isOpen} setIsOpen={setIsOpen} salesperson={editableSalesperson}/>
 
       {status === 'loading' && (    
         <div class="fixed inset-0 transition-opacity flex items-center justify-center">
@@ -82,7 +87,7 @@ function Salespersons(props){
       )}
 
       {status === 'success' && (  
-        <div >       {/* @keydown.escape="closeModal(false)" */}
+        <div onKeyDown={(event) => {if(event.key === "Escape") setIsOpen(false)}} tabIndex="0">
           <div className="pb-5 border-b border-gray-200 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
             <h2 className="text-lg leading-6 font-medium text-gray-900">
               Salespeople
@@ -151,21 +156,14 @@ function Salespersons(props){
                           {salesperson.manager}
                         </td>
                         <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-                          <button onClick={ editSalesPerson(salesperson) } className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                          <button onClick={ () => editSalesPerson(salesperson) } className="text-indigo-600 hover:text-indigo-900">Edit</button>
                         </td>
                       </tr>
                       ))}
                     </tbody>
                   </table>
                     <nav className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                    <div className="flex-1 flex justify-between sm:justify-end">
-                      {/* <button onClick={ () => setPage(page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-                        Previous
-                      </button>
-                      <button onClick={ () => setPage(page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-                        Next
-                      </button> */}
-                      
+                    <div className="flex-1 flex justify-between sm:justify-end">                      
                       <PageButtons page={page} setPage={setPage} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage}></PageButtons>
                     </div>
                   </nav>

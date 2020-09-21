@@ -1,12 +1,15 @@
 import React from 'react';
 import Modal from '../components/Modal'
 
-function submit() {
-
-}
-const salesperson = {};
 
 function ModifySalespersons(props) {
+
+  function submit(salesperson) {
+    console.log(salesperson);
+    // return new salesperson object
+    props.setIsOpen(false);
+  }
+
   return (
     <Modal isOpen={props.isOpen} setIsOpen={props.setIsOpen} content={
       <>
@@ -16,14 +19,15 @@ function ModifySalespersons(props) {
               Salesperson Information
             </h3>
           </div>
-          <div class="mt-6 sm:mt-5">
+
+          <form class="mt-6 sm:mt-5">
             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
               <label for="first_name" class="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 First name
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input v-model="salesperson.firstName" id="first_name" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input value={props.salesperson.firstName} id="first_name" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -34,7 +38,7 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input v-model="salesperson.lastName" id="last_name" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input value={props.salesperson.lastName} id="last_name" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -45,7 +49,7 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input v-model="salesperson.address1" id="address1" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input value={props.salesperson.address1} id="address1" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -58,7 +62,7 @@ function ModifySalespersons(props) {
               </div>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input v-model="salesperson.address2" id="address2" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input value={props.salesperson.address2} id="address2" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -69,7 +73,7 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input v-model="salesperson.city" id="city" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input value={props.salesperson.city} id="city" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -80,7 +84,7 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input v-model="salesperson.state" id="state" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input value={props.salesperson.state} id="state" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
@@ -91,24 +95,24 @@ function ModifySalespersons(props) {
               </label>
               <div class="mt-1 sm:mt-0 sm:col-span-2">
                 <div class="max-w-lg rounded-md shadow-sm sm:max-w-xs">
-                  <input v-model="salesperson.postalCode" id="zip" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                  <input value={props.salesperson.postalCode} id="zip" class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
 
         <div class="mt-5 sm:mt-6 space-y-2">
           <span class="flex w-full rounded-md shadow-sm">
-            <button onClick={submit(salesperson)} type="button" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+            <button onClick={() => submit(props.salesperson)} type="button" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
               Submit
-                </button>
+            </button>
           </span>
 
           <span class="flex w-full rounded-md shadow-sm">
             <button onClick={() => props.setIsOpen(false)} type="button" class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-white text-base leading-6 font-medium text-gray-500 shadow-sm hover:bg-gray-100 focus:outline-none focus:border-gray-700 focus:shadow-outline-gray transition ease-in-out duration-150 sm:text-sm sm:leading-5">
               Cancel
-                </button>
+            </button>
           </span>
         </div>
       </>
