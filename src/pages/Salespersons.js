@@ -1,41 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryCache, QueryCache, ReactQueryCacheProvider } from 'react-query'
 import ModifySalespersons from '../components/ModifySalespersons'
 
-
-function GetFormattedDate(date){
-
-}
-
-function getTerminationString(val){
-
-}
-
-
-function PageButtons(props) {
-  return ( 
-    <>
-      { props.hasPreviousPage && (
-        <button onClick={ () => props.setPage(props.page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-          Previous
-        </button>
-      )}
-      { props.hasNextPage && (
-        <button onClick={ () => props.setPage(props.page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-          Next
-        </button>
-      )}
-    </>
-   );
-}
 
 function Salespersons(props){
   const [page, setPage] = React.useState(1)
   const [hasNextPage, setHasNextPage] = React.useState(true)
   const [hasPreviousPage, setHasPreviousPage] = React.useState(false)
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [editableSalesperson, setEditableSalesperson] = React.useState({})
+  const [editModalIsOpen, setEditModalIsOpen] = React.useState(false)
+  const [addModalIsOpen, setAddModalIsOpen] = React.useState(false)
+  const [idToEdit, setIdToEdit] = React.useState(0)
+  //const [salespersonToModify, setSalespersonToModify] = React.useState({})
 
+  // api calls to abstract out
   const fetchSalespersons = async (key, { page = 1 }) => {
     const res = await fetch(`http://localhost:5000/api/salespersons?pagenumber=${page}&pagesize=4`);
     let pagination = JSON.parse(res.headers.get("X-Pagination"));
@@ -46,35 +23,58 @@ function Salespersons(props){
     return res.json();
   }
 
+  const fetchSalesperson = async (key, salespersonId) => {
+    const res = await fetch(`http://localhost:5000/api/salespersons/${salespersonId}`);
+
+    return res.json();
+  }
+
+  const { data: salespersons, status: salespersonsStatus } = useQuery(['salespersons', { page } ], fetchSalespersons)
+  const { data: editableSalesperson, status: editableSalespersonStatus } = useQuery(['foundSalesperson', idToEdit], fetchSalesperson)
+
   function addSalesPerson(){ 
-    setEditableSalesperson({})
-    setIsOpen(true)
+    setAddModalIsOpen(true);
   }
   
-  function editSalesPerson(salesperson){
-    console.log(salesperson)
-    setEditableSalesperson(Object.assign({}, salesperson));
-    setIsOpen(true);
+  function editSalesPerson(salespersonId){    
+    fetchSalesperson(salespersonId)
+    .then((salesperson) => {
+      setIdToEdit(salespersonId)
+      setEditModalIsOpen(true);
+    });    
   }
 
   function handleSubmit(newSalesperson) {
     console.log(newSalesperson);
-    // call api to create or update record
-    setIsOpen(false);
-  }
+    if(newSalesperson.salespersonId){
+      console.log('edit');
+      setEditModalIsOpen(false);
+    }
+    else{
+      console.log('add');
+      setAddModalIsOpen(false);
+    }
 
-  const { data: salespersons, status } = useQuery(['salespersons', { page } ], fetchSalespersons)
+  }
 
   return (
     <>      
-      <ModifySalespersons
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        salesperson={editableSalesperson}
-        onSubmit={handleSubmit}
-        />
-
-      {status === 'loading' && (    
+    {editableSalespersonStatus === 'success' && (
+      <>
+        <ModifySalespersons
+          isOpen={editModalIsOpen}
+          setIsOpen={setEditModalIsOpen}
+          salesperson={editableSalesperson}
+          onSubmit={handleSubmit}
+          />
+          <ModifySalespersons
+            isOpen={addModalIsOpen}
+            setIsOpen={setAddModalIsOpen}
+            onSubmit={handleSubmit}
+            />
+      </>
+    )}
+      {salespersonsStatus === 'loading' && (    
         <div class="fixed inset-0 transition-opacity flex items-center justify-center">
           <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
           
@@ -90,14 +90,14 @@ function Salespersons(props){
         </div>
       )}
       
-      {status === 'error' && (  
+      {salespersonsStatus === 'error' && (  
         <div>
           Error
         </div>
       )}
 
-      {status === 'success' && (  
-        <div onKeyDown={(event) => {if(event.key === "Escape") setIsOpen(false)}} tabIndex="0">
+      {salespersonsStatus === 'success' && (  
+        <div onKeyDown={(event) => {if(event.key === "Escape") { setAddModalIsOpen(false); setEditModalIsOpen(false);}}} tabIndex="0">
           <div className="pb-5 border-b border-gray-200 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
             <h2 className="text-lg leading-6 font-medium text-gray-900">
               Salespeople
@@ -166,7 +166,7 @@ function Salespersons(props){
                           {salesperson.manager}
                         </td>
                         <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-                          <button onClick={ () => editSalesPerson(salesperson) } className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                          <button onClick={ () => editSalesPerson(salesperson.salespersonId) } className="text-indigo-600 hover:text-indigo-900">Edit</button>
                         </td>
                       </tr>
                       ))}
@@ -185,6 +185,31 @@ function Salespersons(props){
       )}
     </>
   );
+}
+
+function GetFormattedDate(date){
+
+}
+
+function getTerminationString(val){
+
+}
+
+function PageButtons(props) {
+  return ( 
+    <>
+      { props.hasPreviousPage && (
+        <button onClick={ () => props.setPage(props.page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+          Previous
+        </button>
+      )}
+      { props.hasNextPage && (
+        <button onClick={ () => props.setPage(props.page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+          Next
+        </button>
+      )}
+    </>
+   );
 }
 
 export default Salespersons;
