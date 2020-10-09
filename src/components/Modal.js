@@ -1,5 +1,5 @@
 import React from 'react';
-import { Transition } from '@tailwindui/react'
+import { Transition } from '@headlessui/react'
 import ReactDOM from 'react-dom'
 
 
