@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, useQueryCache, QueryCache, ReactQueryCacheProvider } from 'react-query'
+import React from 'react';
+import { useQuery, useMutation } from 'react-query'
 import ModifySalespersons from '../components/ModifySalespersons'
-
+import axios from 'axios';
 
 function Salespersons(props){
   const [page, setPage] = React.useState(1)
@@ -10,7 +10,6 @@ function Salespersons(props){
   const [editModalIsOpen, setEditModalIsOpen] = React.useState(false)
   const [addModalIsOpen, setAddModalIsOpen] = React.useState(false)
   const [idToEdit, setIdToEdit] = React.useState(0)
-  //const [salespersonToModify, setSalespersonToModify] = React.useState({})
 
   // api calls to abstract out
   const fetchSalespersons = async (key, { page = 1 }) => {
@@ -29,8 +28,8 @@ function Salespersons(props){
     return res.json();
   }
 
-  const { data: salespersons, status: salespersonsStatus } = useQuery(['salespersons', { page } ], fetchSalespersons)
-  const { data: editableSalesperson, status: editableSalespersonStatus } = useQuery(['foundSalesperson', idToEdit], fetchSalesperson)
+  const { data: salespersons, status: salespersonsStatus, refetch: refetchSalespersons } = useQuery(['salespersons', { page } ], fetchSalespersons)
+  const { data: editableSalesperson, status: editableSalespersonStatus } = useQuery(['editableSalesperson', idToEdit], fetchSalesperson)    
 
   function addSalesPerson(){ 
     setAddModalIsOpen(true);
@@ -39,22 +38,42 @@ function Salespersons(props){
   function editSalesPerson(salespersonId){    
     fetchSalesperson(salespersonId)
     .then((salesperson) => {
-      setIdToEdit(salespersonId)
+      setIdToEdit(salespersonId);
       setEditModalIsOpen(true);
     });    
   }
 
-  function handleSubmit(newSalesperson) {
-    console.log(newSalesperson);
-    if(newSalesperson.salespersonId){
-      console.log('edit');
+  const [updateSalesperson] = useMutation(
+    salesperson => {
+      axios.put(`http://localhost:5000/api/salespersons/${salesperson.salespersonId}`, salesperson)
+    },
+    {
+      onSuccess: () => {
+        refetchSalespersons(page);
+      },
+    }
+  )
+
+  const [addSalesperson] = useMutation(
+    salesperson => {
+      axios.post(`http://localhost:5000/api/salespersons`, salesperson)
+    },
+    {
+      onSuccess: () => {
+        refetchSalespersons(page);
+      },
+    }
+  );
+
+  function handleSubmit(submittedSalesperson) {
+    if(submittedSalesperson.salespersonId){
+      updateSalesperson(submittedSalesperson);
       setEditModalIsOpen(false);
     }
     else{
-      console.log('add');
+      addSalesperson(submittedSalesperson);
       setAddModalIsOpen(false);
     }
-
   }
 
   return (
@@ -70,18 +89,19 @@ function Salespersons(props){
           <ModifySalespersons
             isOpen={addModalIsOpen}
             setIsOpen={setAddModalIsOpen}
+            salesperson={{}}
             onSubmit={handleSubmit}
             />
       </>
     )}
       {salespersonsStatus === 'loading' && (    
-        <div class="fixed inset-0 transition-opacity flex items-center justify-center">
-          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div className="fixed inset-0 transition-opacity flex items-center justify-center">
+          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
           
-          <button type="button" class="z-50 inline-flex items-center px-12 py-8 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150 cursor-not-allowed" disabled="">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <button type="button" className="z-50 inline-flex items-center px-12 py-8 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition ease-in-out duration-150 cursor-not-allowed" disabled="">
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             <p className="text-xl">
               Loading
