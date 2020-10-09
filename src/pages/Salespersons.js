@@ -31,8 +31,8 @@ function Salespersons(props){
     return res.json();
   }
 
-  const { data: salespersons, status: salespersonsStatus, refetch: refetchSalespersons } = useQuery(['salespersons', { page } ], fetchSalespersons)
-  const { data: editableSalesperson, status: editableSalespersonStatus } = useQuery(['editableSalesperson', idToEdit], fetchSalesperson)    
+  const { data: salespersons, status: salespersonsStatus, refetch: refetchSalespersons } = useQuery(['salespersons', { page } ], fetchSalespersons);
+  const { data: editableSalesperson, status: editableSalespersonStatus } = useQuery(['editableSalesperson', idToEdit], fetchSalesperson);
 
   function addSalesPerson(){ 
     setAddModalIsOpen(true);
@@ -176,7 +176,7 @@ function Salespersons(props){
                     <tbody className="bg-white divide-y divide-gray-200">
                       
                       { salespersons.map((salesperson, index) => (
-                      <tr>
+                      <tr key={index}>
                         <td className="px-6 py-4 whitespace-no-wrap">
                           <div className="flex items-center">
                             <div className="">

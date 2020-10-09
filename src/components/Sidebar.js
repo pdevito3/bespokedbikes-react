@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Transition } from '@headlessui/react'
-import {Route, Link, Switch} from "react-router-dom"
+import {Route, NavLink, Switch} from "react-router-dom"
 
 function MobileNavButton(props) {
   const inactiveMobileNavButtonClass = "group flex items-center px-2 py-2 text-base leading-6 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-100 transition ease-in-out duration-150";
   const activeMobileNavButtonClass = "group flex items-center px-2 py-2 text-base leading-6 font-medium text-gray-900 rounded-md bg-gray-100 focus:outline-none focus:bg-gray-200 transition ease-in-out duration-150";
   
   return (
-    <Link to={props.hrefTarget} activeClassName={activeMobileNavButtonClass} className={inactiveMobileNavButtonClass}>
+    <NavLink to={props.hrefTarget} exact activeClassName={activeMobileNavButtonClass} className={inactiveMobileNavButtonClass}>
       {props.svg}
       {props.name}
-    </Link>
+    </NavLink>
   );
 }
 
@@ -19,10 +19,10 @@ function WebNavButton(props) {
   const inactiveWebNavButtonClass = "group flex items-center px-2 py-2 text-sm leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition ease-in-out duration-150";
   
   return(
-    <Link to={props.hrefTarget} activeClassName={activeWebNavButtonClass} className={inactiveWebNavButtonClass}>
+    <NavLink to={props.hrefTarget} exact activeClassName={activeWebNavButtonClass} className={inactiveWebNavButtonClass}>
       {props.svg}
       {props.name}
-    </Link>
+    </NavLink>
   );
 }
 
