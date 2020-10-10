@@ -1,4 +1,4 @@
-import React, { useEffect, useRef  } from 'react';
+import React, { useRef  } from 'react';
 import Modal from '../components/Modal'
 
 function ModifySalespersons(props) {
@@ -19,13 +19,13 @@ function ModifySalespersons(props) {
     props.onSubmit(state);
   }
 
-  // focus input on enter
-  useEffect(() => {
-    try{
-      inputRef.current.focus();
-    }
-    catch(e){}
-  })
+  // focus input on enter -- will go back to first name on tab between controls
+  // useEffect(() => {
+  //   try{
+  //     inputRef.current.focus();
+  //   }
+  //   catch(e){}
+  // })
 
   return (
     <Modal
