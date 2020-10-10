@@ -263,7 +263,7 @@ function Alert(props){
       <AlertBase 
       setIsOpen={props.setIsOpen}      
       isOpen={props.isOpen}
-      content={
+      >
         <div className="p-4">
           <div className="flex items-start">
             <div className="flex-shrink-0">
@@ -287,7 +287,7 @@ function Alert(props){
             </div>
           </div>
         </div>
-      } />
+      </AlertBase>
   )
 }
 
