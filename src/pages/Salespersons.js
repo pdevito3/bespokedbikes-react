@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Transition, Listbox } from '@headlessui/react'
+import React, { useState, useMemo, useRef } from 'react';
 import { useQuery, useMutation } from 'react-query'
 import ModifySalespersons from '../components/ModifySalespersons'
 import AlertBase from '../components/AlertBase'
+import ListboxPretty from '../components/ListboxPretty'
 import axios from 'axios';
 import { fetchSalesperson, fetchSalespersons, hasNextPage, hasPreviousPage } from '../api/salespersons-api'
 
@@ -84,16 +84,20 @@ function Salespersons(props){
             setIsOpen={setEditModalIsOpen}
             salesperson={editableSalesperson}
             onSubmit={handleSubmit}
-            />
+          />
             
           <ModifySalespersons
             isOpen={addModalIsOpen}
             setIsOpen={setAddModalIsOpen}
             salesperson={{}}
             onSubmit={handleSubmit}
-            />
+          />
             
-          <Alert isOpen={showAlert} setIsOpen={setShowAlert} type={modalType} />
+          <Alert
+            isOpen={showAlert}
+            setIsOpen={setShowAlert}
+            type={modalType}
+          />
         </>
       )}
 
@@ -135,7 +139,7 @@ function Salespersons(props){
           </div>
 
 
-          <Filters />
+          <Filter /> 
 
 
           <div className="flex flex-col">
@@ -266,8 +270,8 @@ function Alert(props){
 
   return(
       <AlertBase 
-      setIsOpen={props.setIsOpen}      
-      isOpen={props.isOpen}
+        setIsOpen={props.setIsOpen}      
+        isOpen={props.isOpen}
       >
         <div className="p-4">
           <div className="flex items-start">
@@ -296,136 +300,40 @@ function Alert(props){
   )
 }
 
-function Filters(props){
-  
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-    { id: 6, name: 'Therese Wunsch2' },
-    { id: 7, name: 'Benedict Kessler2' },
-    { id: 8, name: 'Katelyn Rohan2' },
-  ]
+function Filter(props){
+  const filters = useMemo(
+    () => [
+    { id: "firstName", name: "First Name" },
+    { id: "lastName", name: "Last Name" },
+  ],
+  []);
 
-    const [selectedPerson, setSelectedPerson] = useState(people[0])
+  const [selectedFilterField, setSelectedFilterField] = useState(filters[0]);
+  const [selectedFilterValue, setSelectedFilterValue] = useState(null);
+  const inputRef = useRef();
+
+  function handleChange(e) {
+    const value = e.target.value;
+
+    setSelectedFilterValue(value);
+  }
+
 
   return (
     <div className="py-4 w-full flex items-center justify-start">
-        <Listbox
-          as="div"
-          className="w-40"
-          value={selectedPerson}
-          onChange={setSelectedPerson}
-        >
-          {({ open }) => (
-            <>
-              <Listbox.Label className="sr-only block text-sm leading-5 font-medium text-gray-700">
-                Filter First Name
-              </Listbox.Label>
-              <div className="relative">
-                <span className="inline-block w-full rounded-l-md shadow-sm">
-                  <Listbox.Button className="cursor-default relative w-full rounded-l-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-                    <span className="block truncate">{selectedPerson.name}</span>
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                      <svg
-                        className="h-5 w-5 text-gray-400"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <path
-                          d="M7 7l3-3 3 3m0 6l-3 3-3-3"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                  </Listbox.Button>
-                </span>
+        <ListboxPretty filters={filters} selectedFilter={selectedFilterField} setSelectedFilter={setSelectedFilterField} />
 
-                <Transition
-                  show={open}
-                  leave="transition ease-in duration-100"
-                  leaveFrom="opacity-100"
-                  leaveTo="opacity-0"
-                  className="absolute mt-1 w-full rounded-md bg-white shadow-lg"
-                >
-                  <Listbox.Options
-                    static
-                    className="max-h-60 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
-                  >
-                    {people.map((person) => (
-                      <Listbox.Option key={person.id} value={person}>
-                        {({ selected, active }) => (
-                          <div
-                            className={`${
-                              active
-                                ? "text-white bg-blue-600"
-                                : "text-gray-900"
-                            } cursor-default select-none relative py-2 pl-8 pr-4`}
-                          >
-                            <span
-                              className={`${
-                                selected ? "font-semibold" : "font-normal"
-                              } block truncate`}
-                            >
-                              {person.name}
-                            </span>
-                            {selected && (
-                              <span
-                                className={`${
-                                  active ? "text-white" : "text-blue-600"
-                                } absolute inset-y-0 left-0 flex items-center pl-1.5`}
-                              >
-                                <svg
-                                  className="h-5 w-5"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </Listbox.Option>
-                    ))}
-                  </Listbox.Options>
-                </Transition>
-              </div>
-            </>
-          )}
-        </Listbox>
-
-      <div class="relative rounded-r-md shadow-sm">
-        <input id="email" class="-ml-px cursor-default w-full rounded-r-md border border-gray-300 bg-white px-3 py-2 text-left focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5" placeholder="you@example.com" />
+      <div className="relative rounded-r-md shadow-sm">
+        <input
+          placeholder="tbd"
+          name="firstName"
+          onChange={handleChange}
+          value={selectedFilterValue}
+          id="first_name"
+          className="-ml-px cursor-default w-full rounded-r-md border border-gray-300 bg-white px-3 py-2 text-left focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5" />
       </div>
     </div>
   );
 }
-
-// appearance: none;
-//     background-color: #ffffff;
-//     border-color: #a4cafe;
-//     border-width: 1px;
-//     border-radius: 0.375rem;
-//     padding-top: 0.5rem;
-//     padding-right: 0.75rem;
-//     padding-bottom: 0.5rem;
-//     padding-left: 0.75rem;
-//     font-size: 1rem;
-//     line-height: 1.5;
-//     color: #9fa6b2;
-//     opacity: 1;
-//     outline: none;
-//     box-shadow: 0 0 0 3px rgba(164, 202, 254, 0.45);
 
 export default Salespersons;
