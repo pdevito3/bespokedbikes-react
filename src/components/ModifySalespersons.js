@@ -42,7 +42,7 @@ function ModifySalespersons(props) {
 
           <form className="mt-6 sm:mt-5" onKeyDown={(event) => {if(event.key === "Enter") { submit(); }}}>
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-              <label for="first_name" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              <label forhtml="first_name" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 First name
               </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
@@ -59,7 +59,7 @@ function ModifySalespersons(props) {
             </div>
 
             <div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
-              <label for="last_name" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              <label forhtml="last_name" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 Last name
               </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
@@ -75,7 +75,7 @@ function ModifySalespersons(props) {
             </div>
 
             <div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-              <label for="address1" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              <label forhtml="address1" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 Address
               </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
@@ -92,7 +92,7 @@ function ModifySalespersons(props) {
 
             <div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
               <div className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
-                <label for="address2" className="sr-only">
+                <label forhtml="address2" className="sr-only">
                   Address2
                 </label>
               </div>
@@ -109,7 +109,7 @@ function ModifySalespersons(props) {
             </div>
 
             <div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
-              <label for="city" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              <label forhtml="city" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 City
               </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
@@ -125,7 +125,7 @@ function ModifySalespersons(props) {
             </div>
 
             <div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
-              <label for="state" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              <label forhtml="state" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 State
               </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">
@@ -141,7 +141,7 @@ function ModifySalespersons(props) {
             </div>
 
             <div className="mt-6 sm:mt-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
-              <label for="zip" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+              <label forhtml="zip" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 ZIP / Postal
               </label>
               <div className="mt-1 sm:mt-0 sm:col-span-2">

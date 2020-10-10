@@ -3,48 +3,18 @@ import { useQuery, useMutation } from 'react-query'
 import ModifySalespersons from '../components/ModifySalespersons'
 import AlertBase from '../components/AlertBase'
 import axios from 'axios';
+import { fetchSalesperson, fetchSalespersons, hasNextPage, hasPreviousPage } from '../api/salespersons-api'
 
 function Salespersons(props){
   const [page, setPage] = React.useState(1)
-  const [hasNextPage, setHasNextPage] = React.useState(true)
-  const [hasPreviousPage, setHasPreviousPage] = React.useState(false)
   const [editModalIsOpen, setEditModalIsOpen] = React.useState(false)
   const [addModalIsOpen, setAddModalIsOpen] = React.useState(false)
   const [idToEdit, setIdToEdit] = React.useState(0)
   const [showAlert, setShowAlert] = React.useState(false)
   const [modalType, setModalType] = React.useState(null)
 
-  // api calls to abstract out
-  const fetchSalespersons = async (key, { page = 1 }) => {
-    const res = await fetch(`http://localhost:5000/api/salespersons?pagenumber=${page}&pagesize=4`);
-    let pagination = JSON.parse(res.headers.get("X-Pagination"));
-
-    setHasNextPage(pagination.hasNext);
-    setHasPreviousPage(pagination.hasPrevious);
-
-    return res.json();
-  }
-
-  const fetchSalesperson = async (key, salespersonId) => {
-    const res = await fetch(`http://localhost:5000/api/salespersons/${salespersonId}`);
-
-    return res.json();
-  }
-
   const { data: salespersons, status: salespersonsStatus, refetch: refetchSalespersons } = useQuery(['salespersons', { page } ], fetchSalespersons);
   const { data: editableSalesperson, status: editableSalespersonStatus } = useQuery(['editableSalesperson', idToEdit], fetchSalesperson);
-
-  function addSalesPerson(){ 
-    setAddModalIsOpen(true);
-  }
-  
-  function editSalesPerson(salespersonId){    
-    fetchSalesperson(salespersonId)
-    .then((salesperson) => {
-      setIdToEdit(salespersonId);
-      setEditModalIsOpen(true);
-    });    
-  }
 
   const [updateSalesperson] = useMutation(
     salesperson => {
@@ -75,6 +45,18 @@ function Salespersons(props){
       },
     }
   );
+
+  function addSalesPerson(){ 
+    setAddModalIsOpen(true);
+  }
+  
+  function editSalesPerson(salespersonId){    
+    fetchSalesperson(salespersonId)
+    .then((salesperson) => {
+      setIdToEdit(salespersonId);
+      setEditModalIsOpen(true);
+    });    
+  }
 
   function showModal(type){
     setModalType(type);
@@ -272,7 +254,7 @@ function Alert(props){
     title = "Oh No!";
     body = "It looks like there was an issue.";
     svg = 
-    <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+    <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
       <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
     </svg>
   }
