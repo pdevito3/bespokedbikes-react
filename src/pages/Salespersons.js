@@ -3,8 +3,10 @@ import { useQuery, useMutation } from 'react-query'
 import ModifySalespersons from '../components/ModifySalespersons'
 import AlertBase from '../components/AlertBase'
 import ListboxPretty from '../components/ListboxPretty'
+import Filter from '../components/Filter'
 import axios from 'axios';
 import { fetchSalesperson, fetchSalespersons, hasNextPage, hasPreviousPage } from '../api/salespersons-api'
+import debounce from 'lodash.debounce'
 
 function Salespersons(props){
   const [page, setPage] = React.useState(1)
@@ -13,8 +15,9 @@ function Salespersons(props){
   const [idToEdit, setIdToEdit] = React.useState(0)
   const [showAlert, setShowAlert] = React.useState(false)
   const [modalType, setModalType] = React.useState(null)
+  const [filterQueryString, setFilterQueryString] = React.useState('')
 
-  const { data: salespersons, status: salespersonsStatus, refetch: refetchSalespersons } = useQuery(['salespersons', { page } ], fetchSalespersons);
+  const { data: salespersons, status: salespersonsStatus, refetch: refetchSalespersons } = useQuery(['salespersons', { page, filterQueryString } ], fetchSalespersons);
   const { data: editableSalesperson, status: editableSalespersonStatus } = useQuery(['editableSalesperson', idToEdit], fetchSalesperson);
 
   const [updateSalesperson] = useMutation(
@@ -74,6 +77,17 @@ function Salespersons(props){
       setAddModalIsOpen(false);
     }
   }
+
+function buildFilterQueryString(filterField, filterVal){
+  setFilterQueryString(`&filters=${filterField}@=*${filterVal}`);
+}
+
+const filters = useMemo(
+  () => [
+  { id: "firstName", name: "First Name", placeholder: "John" },
+  { id: "lastName", name: "Last Name", placeholder: "Doe" },
+],
+[]);
 
   return (
     <>      
@@ -139,7 +153,7 @@ function Salespersons(props){
           </div>
 
 
-          <Filter /> 
+          <Filter setFilterQueryString={buildFilterQueryString} filters={filters} /> 
 
 
           <div className="flex flex-col">
@@ -298,42 +312,6 @@ function Alert(props){
         </div>
       </AlertBase>
   )
-}
-
-function Filter(props){
-  const filters = useMemo(
-    () => [
-    { id: "firstName", name: "First Name" },
-    { id: "lastName", name: "Last Name" },
-  ],
-  []);
-
-  const [selectedFilterField, setSelectedFilterField] = useState(filters[0]);
-  const [selectedFilterValue, setSelectedFilterValue] = useState(null);
-  const inputRef = useRef();
-
-  function handleChange(e) {
-    const value = e.target.value;
-
-    setSelectedFilterValue(value);
-  }
-
-
-  return (
-    <div className="py-4 w-full flex items-center justify-start">
-        <ListboxPretty filters={filters} selectedFilter={selectedFilterField} setSelectedFilter={setSelectedFilterField} />
-
-      <div className="relative rounded-r-md shadow-sm">
-        <input
-          placeholder="tbd"
-          name="firstName"
-          onChange={handleChange}
-          value={selectedFilterValue}
-          id="first_name"
-          className="-ml-px cursor-default w-full rounded-r-md border border-gray-300 bg-white px-3 py-2 text-left focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5" />
-      </div>
-    </div>
-  );
 }
 
 export default Salespersons;

@@ -3,9 +3,10 @@ const apiURL = `http://localhost:5000/api/salespersons`//process.env.REACT_APP_A
 let hasNextPage = false;
 let hasPreviousPage = false;
 
-async function fetchSalespersons(key, { page = 1 }) {
-
-  const res = await fetch(`${apiURL}?pagenumber=${page}&pagesize=4`);
+async function fetchSalespersons(key, { page = 1, filterQueryString }) {
+  let url = `${apiURL}?pagenumber=${page}&pagesize=4${filterQueryString}`;
+  
+  const res = await fetch(url);
   let pagination = JSON.parse(res.headers.get("X-Pagination"));
 
   hasNextPage = pagination.hasNext;
