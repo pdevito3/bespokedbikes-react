@@ -14,7 +14,7 @@
     "lodash.debounce": "^4.0.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-query": "^2.22.0",
+    "react-query": "^2.25.2",
     "react-query-devtools": "^2.4.7",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
