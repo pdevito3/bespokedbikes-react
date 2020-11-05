@@ -11,10 +11,12 @@ const loadingProduct = {
   style: 'loading...',
 }
 
-const loadingProducts = Array.from({length: 10}, (v, index) => ({
-  id: `loading-product-${index}`,
-  ...loadingProduct,
-}))
+function loadingProducts(length){
+  return Array.from({length: length}, (v, index) => ({
+    id: `loading-product-${index}`,
+    ...loadingProduct,
+  }))
+}
 
 const productQueryConfig = {
   // staleTime: 1000 * 60 * 5,
@@ -76,7 +78,7 @@ function useGetProductsList(page, pageSize, filterQueryString) {
   const base = useBaseList(page, pageSize, filterQueryString)
   const results = useQuery(base)
   
-  return { ...results, products: results.data ?? loadingProducts, hasNext: base?.hasNext, hasPrevious: base?.hasPrevious, totalCount: base?.totalCount, totalPages: base?.totalPages }
+  return { ...results, products: results.data ?? loadingProducts(pageSize), hasNext: base?.hasNext, hasPrevious: base?.hasPrevious, totalCount: base?.totalCount, totalPages: base?.totalPages }
 }
 
 // get individual

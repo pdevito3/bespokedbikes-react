@@ -3,7 +3,8 @@ import {  useGetProductsList } from '../api/ProductsApi';
 
 function Products(props){
   const [page, setPage] = React.useState(1);
-  const productsQuery = useGetProductsList(page);
+  const [pageSize, setPageSize] = React.useState(2);
+  const productsQuery = useGetProductsList(page, pageSize);
   // const single = useGetProduct(1604961493);
 
   const headerStyles = "px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider";
