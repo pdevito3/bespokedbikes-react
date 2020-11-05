@@ -2,7 +2,9 @@ import React from 'react';
 import {useQuery, queryCache} from 'react-query';
 import axios from 'axios';
 
-const apiURL = `http://localhost:5000/api/products`//process.env.REACT_APP_API_URL
+//process.env.REACT_APP_API_URL
+//https://stackoverflow.com/questions/48378337/create-react-app-not-picking-up-env-files
+const apiURL = `http://localhost:5000/api/products`
 
 const loadingProduct = {
   name: 'Loading...',
@@ -15,18 +17,18 @@ const loadingProducts = Array.from({length: 10}, (v, index) => ({
 }))
 
 const productQueryConfig = {
-  staleTime: 1000 * 60 * 5,
-  cacheTime: 1000 * 60 * 5,
+  // staleTime: 1000 * 60 * 5,
+  // cacheTime: 1000 * 60 * 5,
 }
 
-function useBaseList(page = 1, pageSize = 10, filterQueryString = ''){
+function useBaseList(page = 1, pageSize = 4, filterQueryString = ''){
   const [hasNext, setHasNext] = React.useState(false)
   const [hasPrevious, setHasPrevious] = React.useState(false)
   const [totalCount, setTotalCount] = React.useState(null)
   const [totalPages, setTotalPages] = React.useState(null)
-
+ 
   return {
-    queryKey: ['products'],
+    queryKey: ['products', { page, pageSize }],
     queryFn: () =>
       axios.get(`${apiURL}?pagenumber=${page}&pagesize=${pageSize}&${filterQueryString}`)
         .then((res) => {
@@ -49,10 +51,18 @@ function useBaseList(page = 1, pageSize = 10, filterQueryString = ''){
           )
         }
   
-        // if(hasNext){
-        //   queryCache.prefetchQuery('products', () => )
-        // }
+        if(hasNext){
+          let pagePlus = page++;
+          // queryCache.setQueryData(
+          //   ['products', { page, pageSize}],
+          //   axios.get(`${apiURL}?pagenumber=${pagePlus}&pagesize=${pageSize}&${filterQueryString}`),
+          //   productQueryConfig,
+          // )
+
+          // queryCache.prefetchQuery(['products', { page, pageSize}], () =>  axios.get(`${apiURL}?pagenumber=${pagePlus}&pagesize=${pageSize}&${filterQueryString}`))
+        }
       },
+      ...productQueryConfig
     },
     hasNext,
     hasPrevious,
