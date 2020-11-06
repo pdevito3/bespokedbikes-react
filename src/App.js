@@ -10,7 +10,7 @@ function App() {
   return (
     <>
       <Router>
-        <div className="antialiased">
+        <div className="font-sans antialiased">
           <Sidebar routes={routes} />
         </div>
       </Router>
