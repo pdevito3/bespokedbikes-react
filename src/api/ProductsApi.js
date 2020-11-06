@@ -1,5 +1,5 @@
 import React from 'react';
-import {useQuery, queryCache} from 'react-query';
+import {useQuery, queryCache, useMutation} from 'react-query';
 import axios from 'axios';
 
 //process.env.REACT_APP_API_URL
@@ -95,4 +95,18 @@ function useGetProduct(productId) {
     return { ...results, products: results.data ?? loadingProducts }
 }
 
-export { useGetProduct, useGetProductsList }
+// create product
+function useCreateProduct(page, pageSize) {
+  return useMutation(
+    (values) => axios.post(apiURL, values).then((res) => res.data),
+    {
+      onError: (err, variables, recover) =>
+        typeof recover === 'function' ? recover() : null,
+      onSuccess: () => {
+        queryCache.invalidateQueries('products')
+      },
+    }
+  )
+}
+
+export { useGetProduct, useGetProductsList, useCreateProduct }

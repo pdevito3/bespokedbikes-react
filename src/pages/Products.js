@@ -1,17 +1,32 @@
 import React from 'react';
-import {  useGetProductsList } from '../api/ProductsApi';
+import {  useGetProductsList, useCreateProduct } from '../api/ProductsApi';
+import ModifyProducts from '../components/ModifyProducts'
 
 function Products(props){
   const [page, setPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(2);
+  const [pageSize, setPageSize] = React.useState(8);
   const productsQuery = useGetProductsList(page, pageSize);
-  // const single = useGetProduct(1604961493);
+  const [addModalIsOpen, setAddModalIsOpen] = React.useState(false);
+  const [createProduct, createProductInfo] = useCreateProduct();
 
   const headerStyles = "px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider";
 
   return (
     <>
-      <div className="text-purple-500 p-10">
+      <div className="">
+        <div className="pb-5 border-b border-gray-200 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
+          <h2 className="text-lg leading-6 font-medium text-gray-900">
+            Products
+          </h2>
+          <div>
+            <span className="shadow-sm rounded-md">
+              <button onClick={() => setAddModalIsOpen(true)} type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
+                Add new product
+              </button>
+            </span>
+          </div>
+        </div>
+        
         { (productsQuery.isSuccess || productsQuery.isLoading) && (
           <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -55,14 +70,19 @@ function Products(props){
         }
       </div>
 
-      {
-        productsQuery.hasNext && (
-          <p>Next</p>
-        )
-      }
-      {/* {single.isSuccess && (
-        <p>{single.data.name}</p> 
-      )} */}
+      
+      {(
+        <>
+          <ModifyProducts
+            isOpen={addModalIsOpen}
+            setIsOpen={setAddModalIsOpen}
+            onSubmit={createProduct}
+            clearOnSubmit
+            createProductInfo
+            reset={createProductInfo.reset}
+            />
+        </>
+      )}
     </>
   );
 }
