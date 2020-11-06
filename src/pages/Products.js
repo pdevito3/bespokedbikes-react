@@ -58,6 +58,17 @@ function Products(props){
                   </table>
                   
                   <nav className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div className="hidden sm:block">
+                      <p className="text-sm leading-5 text-gray-700 space-x-1">
+                        Showing
+                        <span className="px-1 font-medium">{productsQuery.products.length === 0 ? 0 : (page * productsQuery.currentPageSize)-productsQuery.currentPageSize + 1}</span>
+                        to
+                        <span className="px-1 font-medium">{productsQuery.products.length === 0 ? 0 : ((page * productsQuery.currentPageSize)-productsQuery.currentPageSize + 1) + productsQuery.products.length - 1}</span>
+                        of
+                        <span className="pr-1 font-medium">{productsQuery.totalCount}</span>
+                        results
+                      </p>
+                    </div>
                     <div className="flex-1 flex justify-between sm:justify-end">                      
                       <PageButtons page={page} setPage={setPage} hasPreviousPage={productsQuery.hasPrevious} hasNextPage={productsQuery.hasNext}></PageButtons>
                     </div>

@@ -28,6 +28,7 @@ function useBaseList(page = 1, pageSize = 4, filterQueryString = ''){
   const [hasPrevious, setHasPrevious] = React.useState(false)
   const [totalCount, setTotalCount] = React.useState(null)
   const [totalPages, setTotalPages] = React.useState(null)
+  const [currentPageSize, setCurrentPageSize] = React.useState(null)
  
   return {
     queryKey: ['products', { page, pageSize }],
@@ -38,8 +39,9 @@ function useBaseList(page = 1, pageSize = 4, filterQueryString = ''){
           
           setHasNext(pagination.hasNext);
           setHasPrevious(pagination.hasPrevious);
-          setTotalCount(pagination.hasNext);
-          setTotalPages(pagination.hasPrevious);
+          setTotalCount(pagination.totalCount);
+          setTotalPages(pagination.totalPages);
+          setCurrentPageSize(pagination.pageSize);
   
           return res.data;
         }),
@@ -70,6 +72,7 @@ function useBaseList(page = 1, pageSize = 4, filterQueryString = ''){
     hasPrevious,
     totalCount,
     totalPages,
+    currentPageSize,
   };
 }
 
@@ -78,7 +81,12 @@ function useGetProductsList(page, pageSize, filterQueryString) {
   const base = useBaseList(page, pageSize, filterQueryString)
   const results = useQuery(base)
   
-  return { ...results, products: results.data ?? loadingProducts(pageSize), hasNext: base?.hasNext, hasPrevious: base?.hasPrevious, totalCount: base?.totalCount, totalPages: base?.totalPages }
+  return { ...results, products: results.data ?? loadingProducts(pageSize)
+    ,hasNext: base?.hasNext
+    ,hasPrevious: base?.hasPrevious
+    ,totalCount: base?.totalCount
+    ,totalPages: base?.totalPages
+    ,currentPageSize : base?.currentPageSize }
 }
 
 // get individual
