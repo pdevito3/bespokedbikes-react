@@ -1,5 +1,5 @@
 import React from 'react';
-import {  useGetProductsList, useCreateProduct } from '../api/ProductsApi';
+import {  useGetProductsList, useGetProduct, useCreateProduct, prefetchProduct } from '../api/ProductsApi';
 import ModifyProducts from '../components/ModifyProducts'
 
 function Products(props){
@@ -8,8 +8,45 @@ function Products(props){
   const productsQuery = useGetProductsList(page, pageSize);
   const [addModalIsOpen, setAddModalIsOpen] = React.useState(false);
   const [createProduct, createProductInfo] = useCreateProduct();
+  const [editModalIsOpen, setEditModalIsOpen] = React.useState(false);
+  const [productId, setProductId] = React.useState();
+  const [product, setProduct] = React.useState();
+  const productQuery = useGetProduct(productId)
 
   const headerStyles = "px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider";
+
+  React.useLayoutEffect(() => {
+    let current = true;
+    if(productId){
+      if(current)
+        setProduct(productQuery.data)
+    }
+
+    return () => {
+      current = false
+      setProductId()
+    }
+  },[productId, productQuery.data])
+
+  // React.useLayoutEffect(() => {
+  //   let current = true;
+  //   if(productId){
+  //     axios.get(`http://localhost:5000/api/products/${productId}`)
+  //       .then((res) => {
+  //         if(current)
+  //           setProduct(res.data)
+  //       })
+  //   }
+
+  //   return () => {
+  //     current = false
+  //   }
+  // },[productId])
+
+  function OpenEditModal(newProductId) {
+    setProductId(newProductId)
+    setEditModalIsOpen(true)
+  }
 
   return (
     <>
@@ -50,7 +87,7 @@ function Products(props){
                           {product.style}
                           </td>
                           <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-                            <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                            <button onClick={() => OpenEditModal(product.productId)} onMouseEnter={() => prefetchProduct(product.productId)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
                           </td>
                         </tr>
                       ))}
@@ -92,6 +129,17 @@ function Products(props){
             createProductInfo
             reset={createProductInfo.reset}
             />
+
+            
+            <ModifyProducts
+              isOpen={editModalIsOpen}
+              setIsOpen={setEditModalIsOpen}
+              initialValues={product}
+              // onSubmit={createProduct}
+              clearOnSubmit
+              // createProductInfo
+              // reset={createProductInfo.reset}
+              />
         </>
       )}
     </>

@@ -90,31 +90,39 @@ function useGetProductsList(page, pageSize, filterQueryString) {
 }
 
 // get individual
+const fetchProduct = (productId) => {if(productId) axios.get(`${apiURL}/${productId}`).then((res) => res.data)}
 function useGetProduct(productId) {
-  const results = useQuery('product',
-  () => axios.get(`${apiURL}/${productId}`)
-    .then((res) => res.data),
+  const results = useQuery(
+    ['product', { productId }],
+    fetchProduct(productId),
     {
-      initialData: () =>
-        queryCache.getQueryData('products')?.find((d) => d.productId === productId),
-      staleTime: 2000,
+      // enabled: false
+      // initialData: () =>
+      //   queryCache.getQueryData('products')?.find((d) => d.productId === productId),
+      // staleTime: 2000,
     })
 
     return { ...results, products: results.data ?? loadingProducts }
 }
 
+export const prefetchProduct = (productId) => {
+queryCache.prefetchQuery(['product', { productId }], fetchProduct(productId), {
+  staleTime: 5000,
+})
+}
+
 // create product
 function useCreateProduct(page, pageSize) {
-  return useMutation(
-    (values) => axios.post(apiURL, values).then((res) => res.data),
-    {
-      onError: (err, variables, recover) =>
-        typeof recover === 'function' ? recover() : null,
-      onSuccess: () => {
-        queryCache.invalidateQueries('products')
-      },
-    }
-  )
+return useMutation(
+  (values) => axios.post(apiURL, values).then((res) => res.data),
+  {
+    onError: (err, variables, recover) =>
+      typeof recover === 'function' ? recover() : null,
+    onSuccess: () => {
+      queryCache.invalidateQueries('products')
+    },
+  }
+)
 }
 
 export { useGetProduct, useGetProductsList, useCreateProduct }
