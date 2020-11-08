@@ -3,13 +3,15 @@ import {  useGetProductsList, useGetProduct, useCreateProduct, prefetchProduct, 
 import ModifyProducts from '../components/ModifyProducts'
 import { compare } from 'fast-json-patch';
 import Filter from '../components/Filter'
+import { useFilter } from '../hooks/filterHook'
+
 
 function Products(){
   const [productId, setProductId] = React.useState();
   const [product, setProduct] = React.useState();
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(8);
-  const [requestFilterParam, setRequestFilterParam] = React.useState("") // move this to the tbd filter hook
+  const {requestFilterParam, updateFilterQuery} = useFilter(setPage)
   const productsQuery = useGetProductsList(page, pageSize, requestFilterParam);
   const productQuery = useGetProduct(productId)
   const [addModalIsOpen, setAddModalIsOpen] = React.useState(false);
@@ -63,39 +65,6 @@ function Products(){
   function openAddModal() {
     setAddModalIsOpen(true)
     createProductInfo.reset();
-  }
-
-// abstract this all out into a hook
-  function removeFromListByProperty(nameKey, prop, myArray){
-    for (var i=0; i < myArray.length; i++) {
-      if (myArray[i][prop] === nameKey)
-        myArray.splice(i,1);
-    }
-    return myArray
-  }
-
-  //change this to an object that also captures the operator and abstract to another file as default export
-  const equalityEnum = {
-    equal: 1,
-    contains: 2,
-  }
-  const [filterQueryList, setFilterQueryList] = React.useState([])
-  function updateFilterQuery({key, equality, value, propertyName}){ 
-    let newList = removeFromListByProperty(key, 'key', Object.assign(filterQueryList));
-    newList.push({key, operation: {equality, value, propertyName}});
-
-    setFilterQueryList(newList)
-    buildQueryString(newList)
-    setPage(1)
-  }
-
-  function buildQueryString(list){
-    let calculatedString = "";
-    for(var filter=0; filter < list.length; filter++ ){
-      if(list[filter].operation.value.length > 0)
-        calculatedString += `${calculatedString.length === 0 ? "filters=" : ""}${filter > 0 ? "," : ""}${list[filter].operation.propertyName}${list[filter].operation.equality === equalityEnum.contains ? "@=*" : "==*"}${list[filter].operation.value}`
-    }
-    setRequestFilterParam(calculatedString)
   }
 
   return (
