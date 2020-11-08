@@ -31,7 +31,7 @@ function useBaseList(page = 1, pageSize = 4, filterQueryString = ''){
   const [currentPageSize, setCurrentPageSize] = React.useState(null)
  
   return {
-    queryKey: ['products', { page, pageSize }],
+    queryKey: ['products', { page, pageSize, filterQueryString }],
     queryFn: () =>
       axios.get(`${apiURL}?pagenumber=${page}&pagesize=${pageSize}&${filterQueryString}`)
         .then((res) => {
@@ -49,7 +49,7 @@ function useBaseList(page = 1, pageSize = 4, filterQueryString = ''){
       onSuccess(products) {
         for (const product of products) {
           queryCache.setQueryData(
-            ['product', {productId: product.productId}],
+            ['products', {productId: product.productId}],
             product,
             productQueryConfig,
           )
@@ -93,10 +93,10 @@ function useGetProductsList(page, pageSize, filterQueryString) {
 const fetchProduct = (productId) => {if(productId) axios.get(`${apiURL}/${productId}`).then((res) => res.data)}
 function useGetProduct(productId) {
   const results = useQuery(
-    ['product', { productId }],
+    ['products', { productId }],
     fetchProduct(productId),
     {
-      // enabled: false
+      enabled: false
       // initialData: () =>
       //   queryCache.getQueryData('products')?.find((d) => d.productId === productId),
       // staleTime: 2000,
@@ -106,7 +106,7 @@ function useGetProduct(productId) {
 }
 
 export const prefetchProduct = (productId) => {
-queryCache.prefetchQuery(['product', { productId }], fetchProduct(productId), {
+queryCache.prefetchQuery(['products', { productId }], fetchProduct(productId), {
   staleTime: 5000,
 })
 }

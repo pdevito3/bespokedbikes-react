@@ -68,6 +68,7 @@ module.exports = {
   variants: {
     backgroundColor: ['responsive', 'hover', 'focus', 'odd'],
     boxShadow: ['responsive', 'hover', 'focus', 'active', 'group-hover'],
+    borderStyle: ['responsive', 'hover', 'focus', 'focus-visible'],
   },
   plugins: [
     require('@tailwindcss/ui')({
