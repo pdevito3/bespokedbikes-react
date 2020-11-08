@@ -2,6 +2,7 @@ import React from 'react';
 import {  useGetProductsList, useGetProduct, useCreateProduct, prefetchProduct, usePutProduct, usePatchProduct } from '../api/ProductsApi';
 import ModifyProducts from '../components/ModifyProducts'
 import { compare } from 'fast-json-patch';
+import Filter from '../components/Filter'
 
 function Products(){
   const [productId, setProductId] = React.useState();
@@ -16,7 +17,6 @@ function Products(){
   const [putProduct, putProductInfo] = usePutProduct();
   const [patchProduct, patchProductInfo] = usePatchProduct();
 
-  const headerStyles = "px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider";
   const onPut = async (values) => {
     putProduct(values)
   }
@@ -65,12 +65,46 @@ function Products(){
     createProductInfo.reset();
   }
 
+// abstract this all out into a hook
+  function removeFromListByProperty(nameKey, prop, myArray){
+    for (var i=0; i < myArray.length; i++) {
+      if (myArray[i][prop] === nameKey)
+        myArray.splice(i,1);
+    }
+    return myArray
+  }
+
+  const equalityEnum = {
+    equal: 1,
+    contains: 2,
+  }
+  const [filterQueryList, setFilterQueryList] = React.useState([])
+  const [queryString, setQueryString] = React.useState("")
+  function updateFilterQuery({key, equality, value, propertyName}){ 
+    let newList = removeFromListByProperty(key, 'key', Object.assign(filterQueryList));
+    newList.push({key, operation: {equality, value, propertyName}});
+
+    setFilterQueryList(newList)
+    buildQueryString(newList)
+  }
+
+  function buildQueryString(list){
+    console.log(list.length)
+    console.log(list)
+    let calculatedString = "";
+    for(var filter=0; filter < list.length; filter++ ){
+      if(list[filter].operation.value.length > 0)
+        calculatedString += `${calculatedString.length === 0 ? "&filters=" : ""}${filter > 0 ? "," : ""}${list[filter].operation.propertyName}${list[filter].operation.equality === equalityEnum.contains ? "@=*" : "=="}${list[filter].operation.value}`
+    }
+    setQueryString(calculatedString)
+  }
+
   return (
     <>
       <div className="">
         <div className="pb-5 border-b border-gray-200 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
           <h2 className="text-lg leading-6 font-medium text-gray-900">
-            Products
+            Products - filtered by {queryString}
           </h2>
           <div>
             <span className="shadow-sm rounded-md">
@@ -80,7 +114,7 @@ function Products(){
             </span>
           </div>
         </div>
-        
+
         { (productsQuery.isSuccess || productsQuery.isLoading) && (
           <div className="pt-5 flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -89,9 +123,14 @@ function Products(){
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead>
                       <tr>
-                        <th className={headerStyles}>Name</th>
-                        <th className={headerStyles}>Style</th>
-                        <th className="px-6 py-3 bg-gray-50"></th>
+                        <th className="px-6 pt-3 pb-1 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th className="px-6 pt-3 pb-1 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Style</th>
+                        <th className="px-6 pt-3 pb-1 bg-gray-50"></th>
+                      </tr>
+                      <tr>
+                        <th className="pl-6 py-2 bg-gray-50"><Filter propertyName="Name" updateFilterQuery={updateFilterQuery} /></th>
+                        <th className="pl-6 py-2 bg-gray-50"><Filter propertyName="Style" updateFilterQuery={updateFilterQuery} /></th>
+                        <th className="bg-gray-50"></th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
