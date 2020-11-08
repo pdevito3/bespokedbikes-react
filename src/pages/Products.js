@@ -9,7 +9,8 @@ function Products(){
   const [product, setProduct] = React.useState();
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(8);
-  const productsQuery = useGetProductsList(page, pageSize);
+  const [requestFilterParam, setRequestFilterParam] = React.useState("") // move this to the tbd filter hook
+  const productsQuery = useGetProductsList(page, pageSize, requestFilterParam);
   const productQuery = useGetProduct(productId)
   const [addModalIsOpen, setAddModalIsOpen] = React.useState(false);
   const [editModalIsOpen, setEditModalIsOpen] = React.useState(false);
@@ -28,8 +29,7 @@ function Products(){
 
   React.useLayoutEffect(() => {
     let current = true;
-    if(productId){
-      if(current)
+    if(productId && current){
         setProduct(productQuery.data)
     }
 
@@ -74,12 +74,12 @@ function Products(){
     return myArray
   }
 
+  //change this to an object that also captures the operator and abstract to another file as default export
   const equalityEnum = {
     equal: 1,
     contains: 2,
   }
   const [filterQueryList, setFilterQueryList] = React.useState([])
-  const [queryString, setQueryString] = React.useState("")
   function updateFilterQuery({key, equality, value, propertyName}){ 
     let newList = removeFromListByProperty(key, 'key', Object.assign(filterQueryList));
     newList.push({key, operation: {equality, value, propertyName}});
@@ -89,14 +89,12 @@ function Products(){
   }
 
   function buildQueryString(list){
-    console.log(list.length)
-    console.log(list)
     let calculatedString = "";
     for(var filter=0; filter < list.length; filter++ ){
       if(list[filter].operation.value.length > 0)
-        calculatedString += `${calculatedString.length === 0 ? "&filters=" : ""}${filter > 0 ? "," : ""}${list[filter].operation.propertyName}${list[filter].operation.equality === equalityEnum.contains ? "@=*" : "=="}${list[filter].operation.value}`
+        calculatedString += `${calculatedString.length === 0 ? "filters=" : ""}${filter > 0 ? "," : ""}${list[filter].operation.propertyName}${list[filter].operation.equality === equalityEnum.contains ? "@=*" : "==*"}${list[filter].operation.value}`
     }
-    setQueryString(calculatedString)
+    setRequestFilterParam(calculatedString)
   }
 
   return (
@@ -104,11 +102,11 @@ function Products(){
       <div className="">
         <div className="pb-5 border-b border-gray-200 space-y-3 sm:flex sm:items-center sm:justify-between sm:space-x-4 sm:space-y-0">
           <h2 className="text-lg leading-6 font-medium text-gray-900">
-            Products - filtered by {queryString}
+            Products
           </h2>
           <div>
             <span className="shadow-sm rounded-md">
-              <button onClick={() => openAddModal()} type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
+              <button onClick={() => openAddModal()} type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus-visible:border-dotted focus-visible:border-dotted focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
                 Add new product
               </button>
             </span>
@@ -222,12 +220,12 @@ function PageButtons(props) {
   return ( 
     <>
       { props.hasPreviousPage && (
-        <button onClick={ () => props.setPage(props.page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+        <button onClick={ () => props.setPage(props.page - 1) } className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus-visible:border-dotted focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
           Previous
         </button>
       )}
       { props.hasNextPage && (
-        <button onClick={ () => props.setPage(props.page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+        <button onClick={ () => props.setPage(props.page + 1) } className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus-visible:border-dotted focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
           Next
         </button>
       )}
