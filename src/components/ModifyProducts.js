@@ -6,7 +6,6 @@ const defaultFormValues = {
   style: '',
 }
 
-
 function ModifyProducts({
   isOpen,
   setIsOpen,
@@ -14,7 +13,9 @@ function ModifyProducts({
   initialValues = defaultFormValues,
   clearOnSubmit,
   createProductInfo,
-  reset
+  editProductInfo,
+  action,
+  submitText
 }) {
   const [values, setValues] = React.useState(initialValues)
   const setValue = (field, value) =>
@@ -27,7 +28,6 @@ function ModifyProducts({
     }
 
     onSubmit(values);
-    reset();
     setIsOpen(false);
   }
 
@@ -48,7 +48,10 @@ function ModifyProducts({
             </h3>
           </div>
 
-          <form className="mt-6 sm:mt-5" onSubmit={handleSubmit} >
+          <form className="mt-6 sm:mt-5" 
+            onSubmit={handleSubmit} 
+            onKeyDown={(e) => {if(e.key === "Enter") handleSubmit(e)}} 
+          >
             <div className="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
               <label forhtml="name" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
                 Name
@@ -64,6 +67,21 @@ function ModifyProducts({
                     className="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
                 </div>
               </div>
+
+              <label forhtml="style" className="block text-sm font-medium leading-5 text-gray-700 sm:mt-px sm:pt-2">
+                Style
+              </label>
+              <div className="mt-1 sm:mt-0 sm:col-span-2">
+                <div className="max-w-lg rounded-md shadow-sm sm:max-w-xs">
+                  <input
+                    type="text"
+                    name="style"
+                    onChange={(e) => setValue('style', e.target.value)}
+                    value={values.style}
+                    id="style"
+                    className="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" />
+                </div>
+              </div>
             </div>
           </form>
         </div>
@@ -71,13 +89,7 @@ function ModifyProducts({
         <div className="mt-5 sm:mt-6 space-y-2">
           <span className="flex w-full rounded-md shadow-sm">
             <button onClick={handleSubmit} type="submit" className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-indigo-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo transition ease-in-out duration-150 sm:text-sm sm:leading-5">
-              {createProductInfo?.isLoading
-                ? 'Saving...'
-                : createProductInfo?.isError
-                ? 'Error!'
-                : createProductInfo?.isSuccess
-                ? 'Saved!'
-                : 'Create Post'}
+              {submitText}              
             </button>
           </span>
 

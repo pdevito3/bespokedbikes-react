@@ -1,19 +1,30 @@
 import React from 'react';
-import {  useGetProductsList, useGetProduct, useCreateProduct, prefetchProduct } from '../api/ProductsApi';
+import {  useGetProductsList, useGetProduct, useCreateProduct, prefetchProduct, usePutProduct, usePatchProduct } from '../api/ProductsApi';
 import ModifyProducts from '../components/ModifyProducts'
+import { compare } from 'fast-json-patch';
 
-function Products(props){
+function Products(){
+  const [productId, setProductId] = React.useState();
+  const [product, setProduct] = React.useState();
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(8);
   const productsQuery = useGetProductsList(page, pageSize);
-  const [addModalIsOpen, setAddModalIsOpen] = React.useState(false);
-  const [createProduct, createProductInfo] = useCreateProduct();
-  const [editModalIsOpen, setEditModalIsOpen] = React.useState(false);
-  const [productId, setProductId] = React.useState();
-  const [product, setProduct] = React.useState();
   const productQuery = useGetProduct(productId)
+  const [addModalIsOpen, setAddModalIsOpen] = React.useState(false);
+  const [editModalIsOpen, setEditModalIsOpen] = React.useState(false);
+  const [createProduct, createProductInfo] = useCreateProduct();
+  const [putProduct, putProductInfo] = usePutProduct();
+  const [patchProduct, patchProductInfo] = usePatchProduct();
 
   const headerStyles = "px-6 py-3 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider";
+  const onPut = async (values) => {
+    putProduct(values)
+  }
+
+  const onPatch = async (values) => {
+    let patchDoc = compare(product, values)
+    patchProduct({productId: values.productId, patchDoc})
+  }
 
   React.useLayoutEffect(() => {
     let current = true;
@@ -24,7 +35,7 @@ function Products(props){
 
     return () => {
       current = false
-      setProductId()
+      setProductId(null)
     }
   },[productId, productQuery.data])
 
@@ -43,9 +54,15 @@ function Products(props){
   //   }
   // },[productId])
 
-  function OpenEditModal(newProductId) {
+  function openEditModal(newProductId) {
     setProductId(newProductId)
     setEditModalIsOpen(true)
+    putProductInfo.reset();
+  }
+  
+  function openAddModal() {
+    setAddModalIsOpen(true)
+    createProductInfo.reset();
   }
 
   return (
@@ -57,7 +74,7 @@ function Products(props){
           </h2>
           <div>
             <span className="shadow-sm rounded-md">
-              <button onClick={() => setAddModalIsOpen(true)} type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
+              <button onClick={() => openAddModal()} type="button" className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700 transition duration-150 ease-in-out">
                 Add new product
               </button>
             </span>
@@ -87,7 +104,7 @@ function Products(props){
                           {product.style}
                           </td>
                           <td className="px-6 py-4 whitespace-no-wrap text-right text-sm leading-5 font-medium">
-                            <button onClick={() => OpenEditModal(product.productId)} onMouseEnter={() => prefetchProduct(product.productId)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                            <button onClick={() => openEditModal(product.productId)} onMouseEnter={() => prefetchProduct(product.productId)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
                           </td>
                         </tr>
                       ))}
@@ -100,7 +117,7 @@ function Products(props){
                         Showing
                         <span className="px-1 font-medium">{productsQuery.products.length === 0 ? 0 : (page * productsQuery.currentPageSize)-productsQuery.currentPageSize + 1}</span>
                         to
-                        <span className="px-1 font-medium">{productsQuery.products.length === 0 ? 0 : ((page * productsQuery.currentPageSize)-productsQuery.currentPageSize + 1) + productsQuery.products.length - 1}</span>
+                        <span className="pr-1 font-medium">{productsQuery.products.length === 0 ? 0 : ((page * productsQuery.currentPageSize)-productsQuery.currentPageSize + 1) + productsQuery.products.length - 1}</span>
                         of
                         <span className="pr-1 font-medium">{productsQuery.totalCount}</span>
                         results
@@ -127,19 +144,34 @@ function Products(props){
             onSubmit={createProduct}
             clearOnSubmit
             createProductInfo
-            reset={createProductInfo.reset}
-            />
-
+            submitText={
+              createProductInfo.isLoading
+                ? 'Saving...'
+                : createProductInfo.isError
+                ? 'Error!'
+                : createProductInfo.isSuccess
+                ? 'Saved!'
+                : 'Add Product'
+            }
+          />
             
-            <ModifyProducts
-              isOpen={editModalIsOpen}
-              setIsOpen={setEditModalIsOpen}
-              initialValues={product}
-              // onSubmit={createProduct}
-              clearOnSubmit
-              // createProductInfo
-              // reset={createProductInfo.reset}
-              />
+          {/* you can use either onPut or onPatch depending on if you want to update with patch or put */}
+          <ModifyProducts
+            isOpen={editModalIsOpen}
+            setIsOpen={setEditModalIsOpen}
+            initialValues={product}
+            onSubmit={onPatch}
+            editProductInfo = {patchProductInfo}
+            submitText={
+              patchProductInfo.isLoading
+                ? 'Saving...'
+                : patchProductInfo.isError
+                ? 'Error!'
+                : patchProductInfo.isSuccess
+                ? 'Saved!'
+                : 'Save Product'
+            }
+            />
         </>
       )}
     </>

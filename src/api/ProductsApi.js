@@ -125,4 +125,44 @@ return useMutation(
 )
 }
 
-export { useGetProduct, useGetProductsList, useCreateProduct }
+//patch product
+function usePutProduct() {
+  return useMutation(
+    (product) => axios.put(`${apiURL}/${product.productId}`, product).then((res) => res.data),
+    {
+      // onMutate: (values) => {
+      //   queryCache.cancelQueries('products')
+  
+      //   const oldPost = queryCache.getQueryData(['products', values.id])
+  
+      //   queryCache.setQueryData(['products', values.id], values)
+  
+      //   return () => queryCache.setQueryData(['products', values.id], oldPost)
+      // },
+      // onError: (error, values, rollback) => rollback(),
+      onError: (err, variables, recover) =>
+        typeof recover === 'function' ? recover() : null,
+      onSuccess: (data, variables) => {
+        queryCache.invalidateQueries('products')
+        // queryCache.invalidateQueries(['products', variables.productId])
+      },
+    }
+  )
+}
+
+function usePatchProduct() {
+  return useMutation(
+    (props) => axios.patch(`${apiURL}/${props.productId}`, props.patchDoc),
+    {
+      // onError: (error, values, rollback) => rollback(),
+      onError: (err, variables, recover) =>
+        typeof recover === 'function' ? recover() : null,
+      onSuccess: (data, variables) => {
+        queryCache.invalidateQueries('products')
+        // queryCache.invalidateQueries(['products', variables.productId])
+      },
+    }
+  )
+}
+
+export { useGetProduct, useGetProductsList, useCreateProduct, usePutProduct, usePatchProduct }
