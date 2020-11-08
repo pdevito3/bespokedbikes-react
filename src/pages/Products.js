@@ -86,6 +86,7 @@ function Products(){
 
     setFilterQueryList(newList)
     buildQueryString(newList)
+    setPage(1)
   }
 
   function buildQueryString(list){
